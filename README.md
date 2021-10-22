@@ -14,7 +14,7 @@ Docker image is built automatically on Dockerhub.
     ```
     # RPC_ENDPOINT - RPC endpoint of the node deployed on Chainstack.
     # WS_ENDPOINT - WebSocket endpoint of the node deployed on Chainstack.
-    # USERNAME, PASSWORD - basic auth credentials to access the node deployed on Chainstack.
+    # USERNAME, PASSWORD - [optional] basic auth credentials to access the node deployed on Chainstack.
 
     # docker run -d --name eth-proxy -p 8545:8545 -p 8546:8546 -e RPC_ENDPOINT=<rpc-endpoint> -e WS_ENDPOINT=<ws-endpoint> -e USERNAME=<username> -e PASSWORD=<password> chainstack/eth-proxy
     docker run -d --name eth-proxy -p 8545:8545 -p 8546:8546 -e RPC_ENDPOINT=nd-123-456-789.p2pify.chainstack.com -e WS_ENDPOINT=ws-nd-123-456-789.p2pify.chainstack.com -e USERNAME=awesome-username -e PASSWORD=awesome-password chainstack/eth-proxy
