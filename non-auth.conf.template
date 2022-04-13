@@ -1,22 +1,13 @@
-upstream rpc_backend{
-    server ${RPC_ENDPOINT} fail_timeout=5s max_fails=3;
-    server ${RPC_ENDPOINT_FAILOVER} backup;
-}
 
-upstream ws_backend{
-    server ${WS_ENDPOINT} fail_timeout=5s max_fails=3;
-    server ${WS_ENDPOINT_FAILOVER} backup;
-}
-
+  
 server {
     listen 0.0.0.0:${RPC_PORT};
 
     location / {
-        resolver kube-dns.kube-system.svc.cluster.local valid=5s;
-        proxy_pass https://rpc_backend;
-        proxy_http_version 1.1;
-        proxy_set_header Connection "";
-        proxy_ssl_server_name on;
+      resolver ${DNS} valid=5s;
+      proxy_pass ${RPC_ENDPOINT};
+      proxy_http_version 1.1;
+      proxy_set_header Connection "";
     }
 }
 
@@ -24,11 +15,10 @@ server {
   listen 0.0.0.0:${WS_PORT};
 
   location / {
-    resolver kube-dns.kube-system.svc.cluster.local valid=5s;
-    proxy_pass https://ws_backend;
+    resolver ${DNS} valid=5s;
+    proxy_pass ${WS_ENDPOINT};
     proxy_http_version 1.1;
     proxy_set_header Connection "upgrade";
     proxy_set_header Upgrade $http_upgrade;
-    proxy_ssl_server_name on;
   }
 }

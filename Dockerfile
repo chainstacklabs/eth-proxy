@@ -6,6 +6,8 @@ RUN chmod +x /entrypoint.sh
 
 COPY ./default.conf.template /etc/nginx/conf.d/default.conf.template
 COPY ./non-auth.conf.template /etc/nginx/conf.d/non-auth.conf.template
+COPY ./rpc.default.conf.template /etc/nginx/conf.d/default.conf.template
+COPY ./rpc.non-auth.conf.template /etc/nginx/conf.d/non-auth.conf.template
 
 ENTRYPOINT ["tini", "--", "/entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]

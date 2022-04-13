@@ -2,11 +2,11 @@ server {
     listen 0.0.0.0:${RPC_PORT};
 
     location / {
-        resolver kube-dns.kube-system.svc.cluster.local valid=5s;
-        proxy_set_header Authorization "Basic ${AUTHORIZATION}";
-        proxy_pass https://${RPC_ENDPOINT};
-        proxy_http_version 1.1;
-        proxy_set_header Connection "";
+      resolver ${DNS} valid=5s;
+      proxy_set_header Authorization "Basic ${AUTHORIZATION}";
+      proxy_pass ${RPC_ENDPOINT};
+      proxy_http_version 1.1;
+      proxy_set_header Connection "";
     }
 }
 
@@ -14,9 +14,9 @@ server {
   listen 0.0.0.0:${WS_PORT};
 
   location / {
-    resolver kube-dns.kube-system.svc.cluster.local valid=5s;
+    resolver ${DNS} valid=5s;
     proxy_set_header Authorization "Basic ${AUTHORIZATION}";
-    proxy_pass https://${WS_ENDPOINT};
+    proxy_pass ${WS_ENDPOINT};
     proxy_http_version 1.1;
     proxy_set_header Connection "upgrade";
     proxy_set_header Upgrade $http_upgrade;
