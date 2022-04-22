@@ -1,13 +1,16 @@
 location /status {
     access_log off;
-    allow 127.0.0.1;
-    #deny all;
-
-    default_type 'application/json';
+    
     content_by_lua_block {
-       local res = ngx.location.capture(
-        '/',
-        { method = ngx.HTTP_POST, body = '{"jsonrpc": "2.0","method": "eth_protocolVersion"}' }
-        )
+        ngx.req.set_header("Content-Type", "application/json")
+        local res = ngx.location.capture(
+                                         '/',
+                                         { 
+                                             method = ngx.HTTP_POST, 
+                                             body = '{"jsonrpc": "2.0","method": "${STATUS_METHOD}"}' 
+                                         }
+                                        )
+        ngx.status = res.status
+        ngx.exit(ngx.OK)
     }
 }

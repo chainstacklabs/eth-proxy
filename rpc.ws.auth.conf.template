@@ -1,10 +1,11 @@
 server {
   listen 0.0.0.0:${PORT};
   resolver ${DNS} valid=5s;
+  proxy_set_header Authorization "Basic ${AUTHORIZATION}";
   proxy_http_version 1.1;
-    
-  include /etc/nginx/conf.d/rpc.template;
 
+  include /etc/nginx/conf.d/rpc.template;
+  
   include /etc/nginx/conf.d/status.template;
 
 }

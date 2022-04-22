@@ -2,28 +2,36 @@
 set -eu
 
 export DNS="${DNS}"
-export RPC_PORT="${RPC_PORT:-8545}"
-export WS_PORT="${WS_PORT:-8546}"
-export WS="${WS:-'YES'}"
+export PORT="${RPC_PORT:-80}"
+export WS="${WS:-"NO"}"
+export STATUS_METHOD="${STATUS_METHOD:-net_version}"
 
 if [[ ! -z "${ENDPOINT:-}"  ]]; then
     export RPC_ENDPOINT="${ENDPOINT}"
     export WS_ENDPOINT="${ENDPOINT}"
+else
+    export RPC_ENDPOINT="${RPC_ENDPOINT}"
+    export WS_ENDPOINT="${WS_ENDPOINT}"
 fi
-
-echo $WS
 
 if [[ -z "${USERNAME:-}" || -z "${PASSWORD:-}" ]] && [[ "$WS" = "YES" ]]; then
-    echo "hecho"
-    envsubst '${DNS} ${RPC_PORT} ${RPC_ENDPOINT} ${WS_PORT} ${WS_ENDPOINT}' < /etc/nginx/conf.d/non-auth.conf.template > /etc/nginx/conf.d/default.conf
-elif [[ -z "${USERNAME:-}" || -z "${PASSWORD:-}" ]] && [[ "$WS" = "NO" ]]; then
-    envsubst '${DNS} ${RPC_PORT} ${RPC_ENDPOINT}' < /etc/nginx/conf.d/rpc.non-auth.conf.template > /etc/nginx/conf.d/default.conf
+    # WS and no auth
+    envsubst '${DNS} ${PORT}' < /tmp/rpc.ws.non-auth.conf.template > /etc/nginx/conf.d/default.conf
+elif [[ -z "${USERNAME:-}" || -z "${PASSWORD:-}" ]]; then
+    # no ws and no auth
+    envsubst '${DNS} ${PORT} ${RPC_ENDPOINT}' < /tmp/rpc.non-auth.conf.template > /etc/nginx/conf.d/default.conf
 elif [[ "$WS" = "YES" ]]; then
+    # ws and auth
     export AUTHORIZATION=$(echo -n "${USERNAME}:${PASSWORD}" | base64 | tr -d \\n)
-    envsubst '${DNS} ${RPC_PORT} ${WS_PORT} ${RPC_ENDPOINT} ${WS_ENDPOINT} ${AUTHORIZATION}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf
+    envsubst '${DNS} ${PORT} ${WS_PORT} ${RPC_ENDPOINT} ${WS_ENDPOINT} ${AUTHORIZATION}' < /tmp/rpc.ws.auth.conf.template > /etc/nginx/conf.d/default.conf
 else
+    # no ws and auth
     export AUTHORIZATION=$(echo -n "${USERNAME}:${PASSWORD}" | base64 | tr -d \\n)
-    envsubst '${DNS} ${RPC_PORT} ${RPC_ENDPOINT} ${AUTHORIZATION}' < /etc/nginx/conf.d/rpc.default.conf.template > /etc/nginx/conf.d/default.conf
+    envsubst '${DNS} ${PORT} ${RPC_ENDPOINT} ${AUTHORIZATION}' < /tmp/rpc.auth.default.conf.template > /etc/nginx/conf.d/default.conf
 fi
+
+envsubst '${STATUS_METHOD}' < /tmp/status.template  > /etc/nginx/conf.d/status.template 
+envsubst '${RPC_ENDPOINT}' < /tmp/rpc.template  > /etc/nginx/conf.d/rpc.template 
+envsubst '${WS_ENDPOINT}' < /tmp/ws.template  > /etc/nginx/conf.d/ws.template 
 
 exec "$@"

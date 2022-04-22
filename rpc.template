@@ -1,0 +1,4 @@
+location / {
+  proxy_pass ${RPC_ENDPOINT};
+  proxy_set_header Connection "";
+}
