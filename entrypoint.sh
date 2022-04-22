@@ -19,15 +19,15 @@ if [[ -z "${USERNAME:-}" || -z "${PASSWORD:-}" ]] && [[ "$WS" = "YES" ]]; then
     envsubst '${DNS} ${PORT}' < /tmp/rpc.ws.non-auth.conf.template > /etc/nginx/conf.d/default.conf
 elif [[ -z "${USERNAME:-}" || -z "${PASSWORD:-}" ]]; then
     # no ws and no auth
-    envsubst '${DNS} ${PORT} ${RPC_ENDPOINT}' < /tmp/rpc.non-auth.conf.template > /etc/nginx/conf.d/default.conf
+    envsubst '${DNS} ${PORT}' < /tmp/rpc.non-auth.conf.template > /etc/nginx/conf.d/default.conf
 elif [[ "$WS" = "YES" ]]; then
     # ws and auth
     export AUTHORIZATION=$(echo -n "${USERNAME}:${PASSWORD}" | base64 | tr -d \\n)
-    envsubst '${DNS} ${PORT} ${WS_PORT} ${RPC_ENDPOINT} ${WS_ENDPOINT} ${AUTHORIZATION}' < /tmp/rpc.ws.auth.conf.template > /etc/nginx/conf.d/default.conf
+    envsubst '${DNS} ${PORT} ${AUTHORIZATION}' < /tmp/rpc.ws.auth.conf.template > /etc/nginx/conf.d/default.conf
 else
     # no ws and auth
     export AUTHORIZATION=$(echo -n "${USERNAME}:${PASSWORD}" | base64 | tr -d \\n)
-    envsubst '${DNS} ${PORT} ${RPC_ENDPOINT} ${AUTHORIZATION}' < /tmp/rpc.auth.default.conf.template > /etc/nginx/conf.d/default.conf
+    envsubst '${DNS} ${PORT} ${AUTHORIZATION}' < /tmp/rpc.auth.default.conf.template > /etc/nginx/conf.d/default.conf
 fi
 
 envsubst '${STATUS_METHOD}' < /tmp/status.template  > /etc/nginx/conf.d/status.template 
