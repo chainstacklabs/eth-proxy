@@ -1,4 +1,4 @@
-FROM nginx:1.19.7-alpine
+FROM nginx:1.21.6-alpine
 
 RUN apk --no-cache add tini bash
 COPY ./entrypoint.sh /entrypoint.sh
